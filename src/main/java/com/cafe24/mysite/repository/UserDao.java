@@ -19,10 +19,19 @@ public class UserDao {
 	//@Autowired
 	//private DataSource datasource;
 	
+	
+	
+	
 	public UserDao() {
 		System.out.println("UserDao Constructor!!!!");
 		
 	}
+	
+	public UserVo get(String email) {
+		return sqlSession.selectOne("getByEmail", email);
+		
+	}
+	
 	
 	public Boolean update(UserVo vo) {
 		return 1 == sqlSession.update("user.update", vo);

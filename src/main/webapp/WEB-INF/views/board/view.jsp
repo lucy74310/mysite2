@@ -25,20 +25,23 @@
 					</tr>
 					<tr>
 						<td class="label">제목</td>
-						<td>${ vo.title }</td>
+						<td>${ oneView.title }</td>
 					</tr>
 					<tr>
 						<td class="label">내용</td>
 						<td>
 							<div class="view-content">
-								${fn:replace(vo.contents, newline, "<br>" )}
+								${fn:replace(oneView.contents, newline, "<br>" )}
 							</div>
 						</td>
 					</tr>
 				</table>
 				<div class="bottom">
 					<a href="${pageContext.servletContext.contextPath }/board">글목록</a>
-					<a href="${pageContext.servletContext.contextPath }/board?a=modifyform&no=${vo.no}">글수정</a>
+					<c:if test="${authUser.no == oneView.userNo }">
+						<a href="${pageContext.servletContext.contextPath }/board/modify/${oneView.no}">글수정</a>
+					</c:if>
+					<a href="${pageContext.servletContext.contextPath }/board/reply/${oneView.groupNo}/${oneView.orderNo}/${oneView.depth}">답글쓰기</a>
 				</div>
 			</div>
 		</div>

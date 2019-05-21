@@ -25,13 +25,22 @@
 		]]>
 	</select>
 	
-	<select id="getByNo" resultType="uservo" parameterType="long"><!-- 내장 alias 소문자로 -->
+	<select id="getByNo" resultType="uservo" parameterType="long"><!-- 내장형은 소문자로 -->
 		<![CDATA[
 			select no, name 
 			  from user 
 			 where no = #{no}  
 		]]>
 	</select>
+	
+	<select id="getByEmail" resultType="uservo" parameterType="string"><!-- 내장형은 소문자로 -->
+		<![CDATA[
+			select no, name 
+			  from user 
+			 where email = #{value}  
+		]]>
+	</select>
+	
 	
 	<update id="update" parameterType="uservo">
 		<![CDATA[

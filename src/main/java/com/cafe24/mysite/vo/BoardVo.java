@@ -3,10 +3,15 @@ package com.cafe24.mysite.vo;
 public class BoardVo {
 	private Long no;
 	private String title;
-	private String writer;
 	private String contents;
-	private int count;
+	private int groupNo;
+	private int orderNo;
+	private int depth;
 	private String regDate;
+	private int hit;
+	private Long userNo;
+	private String userName;
+	
 	public Long getNo() {
 		return no;
 	}
@@ -19,23 +24,29 @@ public class BoardVo {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getWriter() {
-		return writer;
-	}
-	public void setWriter(String writer) {
-		this.writer = writer;
-	}
 	public String getContents() {
 		return contents;
 	}
 	public void setContents(String contents) {
 		this.contents = contents;
 	}
-	public int getCount() {
-		return count;
+	public int getGroupNo() {
+		return groupNo;
 	}
-	public void setCount(int count) {
-		this.count = count;
+	public void setGroupNo(int groupNo) {
+		this.groupNo = groupNo;
+	}
+	public int getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(int orderNo) {
+		this.orderNo = orderNo;
+	}
+	public int getDepth() {
+		return depth;
+	}
+	public void setDepth(int depth) {
+		this.depth = depth;
 	}
 	public String getRegDate() {
 		return regDate;
@@ -43,11 +54,37 @@ public class BoardVo {
 	public void setRegDate(String regDate) {
 		this.regDate = regDate;
 	}
+	
+	public int getHit() {
+		return hit;
+	}
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+	
+	public Long getUserNo() {
+		return userNo;
+	}
+	public void setUserNo(Long userNo) {
+		this.userNo = userNo;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 	@Override
 	public String toString() {
-		return "BoardVo [no=" + no + ", title=" + title + ", writer=" + writer + ", contents=" + contents + ", count="
-				+ count + ", regDate=" + regDate + "]";
+		return "BoardVo [no=" + no + ", title=" + title + ", contents=" + contents + ", groupNo=" + groupNo
+				+ ", orderNo=" + orderNo + ", depth=" + depth + ", regDate=" + regDate + ", hit=" + hit + ", userNo="
+				+ userNo + ", userName=" + userName + "]";
 	}
+	
+	
+	
+	
 	
 	
 }
