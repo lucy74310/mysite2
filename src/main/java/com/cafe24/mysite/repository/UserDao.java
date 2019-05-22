@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StopWatch;
 
 import com.cafe24.mysite.exception.UserDaoException;
 import com.cafe24.mysite.vo.UserVo;
@@ -28,7 +29,19 @@ public class UserDao {
 	}
 	
 	public UserVo get(String email) {
-		return sqlSession.selectOne("getByEmail", email);
+		
+		//시간재려면... AOP 사용 - aroud 
+		//아래처럼 하면 복잡  
+//		StopWatch sw = new StopWatch();
+//		
+//		sw.start();
+//		UserVo vo = sqlSession.selectOne("user.getByEmail", email);
+//		sw.stop();
+//		
+//		Long totalTime = sw.getTotalTimeMillis();
+//		System.out.println( totalTime );
+		
+		return sqlSession.selectOne("user.getByEmail", email);
 		
 	}
 	
