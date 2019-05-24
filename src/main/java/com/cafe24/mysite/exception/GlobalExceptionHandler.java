@@ -65,18 +65,14 @@ public class GlobalExceptionHandler {
 			request.getRequestDispatcher("/WEB-INF/views/error/exception.jsp").forward(request, response);	
 		}
 			
-			
-		
-		
-		
-		
 		
 		//return "error/exception";
-		
-		
-		
-		
 	}
+	
+	 private JSONResult JSONResult() {
+	      return null;
+	 }
+
 	
 //	@ExceptionHandler( UserDaoException.class )
 //	public String handleUserDaoException() {
