@@ -22,7 +22,7 @@
 						만들어 놓은 사이트 입니다.<br><br>
 						<a href="${pageContext.servletContext.contextPath }/guestbook">방명록</a>에 글 남기기<br>
 					</p>
-					<img id="profile" src="${pageContext.servletContext.contextPath }/assets/images/heek.jpg">
+					<img id="profile" src="${pageContext.servletContext.contextPath }/images/profile/1807_008.jpg">
 					<br>
 				</div>
 			</div>
@@ -31,6 +31,7 @@
 			<c:param name="menu" value="main"/>
 		</c:import>
 		<c:import url="/WEB-INF/views/includes/footer.jsp"/>
+		
 	</div>
 </body>
 </html>

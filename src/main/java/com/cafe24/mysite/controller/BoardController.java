@@ -1,17 +1,13 @@
 package com.cafe24.mysite.controller;
 
 
-import java.util.Arrays;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cafe24.mysite.service.BoardService;
 import com.cafe24.mysite.vo.BoardVo;
-import com.cafe24.mysite.vo.UserVo;
+import com.cafe24.security.Auth;
+
 
 @Controller
 @RequestMapping("/board")
@@ -31,108 +28,85 @@ public class BoardController {
 	// 리스트
 	@RequestMapping({"", "/list"})
 	public String list(
-			@RequestParam(value="page", required=false, defaultValue="1") int nowPage,
-			Model model) 
-	{
-		
-		Map<String,Object> map = boardService.getPagingList(nowPage);
-		
+		@RequestParam(value="page", required=true, defaultValue="1") int nowPage,
+		@RequestParam(value="kwd", required=false) String kwd,
+		Model model
+	){
+		//페이징 처리 한 리스트
+		System.out.println(kwd);
+		Map<String,Object> map = boardService.getPagingList(nowPage, kwd);
 		
 		model.addAttribute("list", map.get("list"));
-		model.addAttribute("totalPageNum", map.get("totalPageNum"));
-		
+		model.addAttribute("paging", map.get("paging"));
 		
 		return "board/list";
 	}
 	
-	// 답글쓰기 폼
-	@RequestMapping(value="/reply/{groupno}/{orderno}/{depth}")
-	public String reply(
-			@PathVariable(value = "groupno") Long groupNo,
-			@PathVariable(value = "orderno") Long orderNo,
-			@PathVariable(value = "depth") Long depth,
-			HttpSession session, Model model){
-		UserVo userVo = (UserVo) session.getAttribute("authUser");
-		if(userVo == null) {
-			return "redirect:/board";
-		}
-		
+	@Auth
+	// 글쓰기 폼
+	@RequestMapping(value="/write/{kind}")
+	public String write(
+		@PathVariable String kind,
+		@RequestParam(value="board", required=false) BoardVo boardVo,
+		@RequestParam(value="g", required=true, defaultValue="0" ) int groupNo,
+		@RequestParam(value="o", required=true, defaultValue="0") int orderNo,
+		@RequestParam(value="d", required=true, defaultValue="0") int depth,
+		Model model
+	){	
+		// 답글쓰기 일때 필요한 정보들 
 		model.addAttribute("groupno", groupNo);
 		model.addAttribute("orderno", orderNo);
 		model.addAttribute("depth", depth);
-		
-		return "board/reply";
-	}
-	
-	// 답글쓰기
-	@RequestMapping(value="/reply", method=RequestMethod.POST)
-	public String reply(BoardVo boardVo){
-		boardService.reply(boardVo);
-		return "redirect:/board";
-	}
-
-	
-	// 글쓰기 폼
-	@RequestMapping(value="/write")
-	public String write(HttpSession session, Model model){
-		UserVo userVo = (UserVo) session.getAttribute("authUser");
-		if(userVo == null) {
-			return "redirect:/board";
-		}
+		model.addAttribute("kind", kind);
 		return "board/write";
 	}
 	
+	@Auth
 	// 글쓰기
 	@RequestMapping(value="/write", method=RequestMethod.POST)
-	public String write(BoardVo boardVo){
-		boardService.write(boardVo);
+	public String write(
+		@ModelAttribute BoardVo boardVo,
+		@RequestParam("kind") String kind
+	){
+		
+		if("new".equals(kind)) {
+			//새글쓰기
+			boardService.write(boardVo);
+		} else {
+			//답글쓰기
+			boardService.reply(boardVo);
+		}
+		
 		return "redirect:/board";
 	}
 	
-	
+	@Auth
 	// 글 하나 보기 
 	@RequestMapping(value="view/{no}", method=RequestMethod.GET )
 	public String view(
-			@PathVariable Long no, 
-			Model model,
-			HttpServletRequest request,
-			HttpServletResponse response,
-			HttpSession session) 
-	{
-		//로그인 되어 있는지 확인 
-		UserVo userVo = (UserVo) session.getAttribute("authUser");
-		if(userVo == null) {
-			return "redirect:/board";
-		}
+		@PathVariable Long no, 
+		Model model
+		//@AuthUser UserVo userVo
+	){
+		//로그인확인 - AuthLoginInterceptor 가 해줌
 		
-		//1. 쿠키 확인 
-		String visitNo = userVo.getNo().toString() + ":";
-		
-		
-		Cookie[] cookies = request.getCookies();
-		Boolean contains = false;
-		if(cookies != null && cookies.length > 0) {
-			for(Cookie c : cookies) {
-				if(("visitUser-"+no).equals(c.getName())) {
-					String[] noList = c.getValue().split(":");
-					contains = Arrays.stream(noList).anyMatch(userVo.getNo().toString()::equals);
-					if(!contains) {
-						visitNo  +=  c.getValue();	
-					} 
-				}
-			}
-		}
-		
-		// 2. 해당 쿠키 이름이 없거나, 해당 user가 조회한 기록이 없을 때 : 쿠키 수정  
-		if(!contains) {
-			//조회수 1 증가
-			boardService.hitPlus(no);
-			//쿠키에 쓰기 
-			Cookie cookie = new Cookie("visitUser-"+no, visitNo );
-			cookie.setMaxAge(24*60*60);
-			cookie.setPath(request.getContextPath()+"/board/view/"+no);
-			response.addCookie(cookie);
-		}
+		/*
+		 * //1. 쿠키 확인 String visitNo = userVo.getNo().toString() + ":";
+		 * 
+		 * 
+		 * Cookie[] cookies = request.getCookies(); Boolean contains = false; if(cookies
+		 * != null && cookies.length > 0) { for(Cookie c : cookies) {
+		 * if(("visitUser-"+no).equals(c.getName())) { String[] noList =
+		 * c.getValue().split(":"); contains =
+		 * Arrays.stream(noList).anyMatch(userVo.getNo().toString()::equals);
+		 * if(!contains) { visitNo += c.getValue(); } } } }
+		 * 
+		 * // 2. 해당 쿠키 이름이 없거나, 해당 user가 조회한 기록이 없을 때 : 쿠키 수정 if(!contains) { //조회수 1 증가
+		 * boardService.hitPlus(no); //쿠키에 쓰기 Cookie cookie = new Cookie("visitUser-"+no
+		 * + ")", visitNo ); cookie.setMaxAge(24*60*60);
+		 * cookie.setPath(request.getContextPath()+"/board/view/"+no);
+		 * response.addCookie(cookie); }
+		 */
 		
 		
 		// 게시글 가져오기 
@@ -141,11 +115,10 @@ public class BoardController {
 			return "redirect:/board";
 		}
 		model.addAttribute("oneView", boardVo);
-		System.out.println(boardVo);
 		return "/board/view";
 	}
 	
-	
+	@Auth
 	// 글수정 폼
 	@RequestMapping(value="/modify/{no}")
 	public String modify(@PathVariable Long no, Model model) {
@@ -155,21 +128,19 @@ public class BoardController {
 		}
 		
 		model.addAttribute("oneView", boardVo);
-
-		
 		
 		return "/board/modify";
 	}
 	
+	@Auth
 	// 글 수정 
 	@RequestMapping(value="/modify")
 	public String modify(BoardVo boardVo) {
 		boardService.modify(boardVo);
-		System.out.println(boardVo);
 		return "redirect:/board/view/"+boardVo.getNo();
 	}
 	
-	
+	@Auth
 	//글 삭제 
 	@RequestMapping("/delete/{no}/{groupno}/{orderno}")
 	public String delete(
@@ -177,9 +148,15 @@ public class BoardController {
 			@PathVariable(value="groupno") int groupNo,
 			@PathVariable(value="orderno") int orderNo
 	) {
-		boardService.delete(groupNo, orderNo, no);
+		boardService.delete(groupNo, orderNo, no);	
 		return "redirect:/board";
 	}
 	
+	@Auth
+	@RequestMapping("/search")
+	public String search(@RequestParam String kwd) {
+		System.out.println("kwd:"+kwd);
+		return "redirect:/board";
+	}
 	
 }

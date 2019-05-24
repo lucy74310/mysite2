@@ -20,14 +20,14 @@
 	
 	<select id="getByEmailAndPassword" resultType="uservo" parameterType="map">
 		<![CDATA[
-			select no, name , email, password, gender from user 
+			select no, name , email, password, gender, role from user 
 			where email = #{email} and password = #{password} 
 		]]>
 	</select>
 	
 	<select id="getByNo" resultType="uservo" parameterType="long"><!-- 내장형은 소문자로 -->
 		<![CDATA[
-			select no, name 
+			select no, name, role 
 			  from user 
 			 where no = #{no}  
 		]]>
@@ -35,7 +35,7 @@
 	
 	<select id="getByEmail" resultType="uservo" parameterType="string"><!-- 내장형은 소문자로 -->
 		<![CDATA[
-			select no, name 
+			select no, name , role
 			  from user 
 			 where email = #{value}  
 		]]>

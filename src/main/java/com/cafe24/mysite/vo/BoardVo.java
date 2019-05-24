@@ -11,6 +11,7 @@ public class BoardVo {
 	private int hit;
 	private Long userNo;
 	private String userName;
+	private Byte del;
 	
 	public Long getNo() {
 		return no;
@@ -75,11 +76,18 @@ public class BoardVo {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	
+	public Byte getDel() {
+		return del;
+	}
+	public void setDel(Byte del) {
+		this.del = del;
+	}
 	@Override
 	public String toString() {
 		return "BoardVo [no=" + no + ", title=" + title + ", contents=" + contents + ", groupNo=" + groupNo
 				+ ", orderNo=" + orderNo + ", depth=" + depth + ", regDate=" + regDate + ", hit=" + hit + ", userNo="
-				+ userNo + ", userName=" + userName + "]";
+				+ userNo + ", userName=" + userName + ", del=" + del + "]";
 	}
 	
 	

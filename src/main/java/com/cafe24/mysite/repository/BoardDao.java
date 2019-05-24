@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cafe24.mysite.dto.Paging;
 import com.cafe24.mysite.vo.BoardVo;
 
 @Repository
@@ -16,10 +17,16 @@ public class BoardDao {
 	@Autowired
 	private SqlSession sqlSession;
 	
-	
+	//게시물 전체갯수
 	public int getTotalPosts() {
 		return sqlSession.selectOne("board.getTotalPosts");
 	}
+	
+	//키워드 포함하는 게시물 전체 갯수
+	public int getTotalPostsKwd(String keyword) {
+		return sqlSession.selectOne("board.getTotalPostsKwd" , keyword);
+	}
+	
 	// 게시글 삭제
 	public Boolean delete(Long no) {
 		return 1 == sqlSession.delete("board.delete", no);
@@ -62,11 +69,15 @@ public class BoardDao {
 	
 	//페이징 처리 한 리스트
 	public List<BoardVo> getPagingList(int fromPost, int perPageNum){
-		System.out.println("fromPost : " + fromPost + " , perPageNum : " + perPageNum);
 		Map<String,Integer> map = new HashMap<String,Integer>();
 		map.put("fromPost", fromPost);
 		map.put("perPageNum", perPageNum);
 		return sqlSession.selectList("board.getPagingList", map);
+		
+	}
+	//키워드 있는 경우 리스트 
+	public List<BoardVo> getPagingListKwd(Paging paging){
+		return sqlSession.selectList("board.getPagingListKwd", paging);
 		
 	}
 	

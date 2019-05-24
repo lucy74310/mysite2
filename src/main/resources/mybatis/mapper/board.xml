@@ -18,7 +18,7 @@
 	<![CDATA[
 		insert into board
 		values (null, #{title} , #{contents} , 0, now(),
-				#{groupNo}, #{orderNo}+1, #{depth}+1, #{userNo})
+				#{groupNo}, #{orderNo}+1, #{depth}+1, #{userNo}, 0)
 	]]>
 	</insert>
 	
@@ -43,7 +43,7 @@
 	
 	<delete id="delete" parameterType="long">
 	<![CDATA[
-		delete from board where no = #{no}
+		update board set del = 1 where no = #{no}
 	]]>
 	</delete>
 	
@@ -57,7 +57,15 @@
 	]]>
 	</update>
 	
-	
+	<insert id="insert" parameterType="boardvo">
+	<![CDATA[
+		insert into board  
+		values ( null, #{title} , #{contents} , 0, now(),
+				 (select if( isnull(max(group_no)) , 0 , max(group_no)) from board a )+1,
+				  1, 1, #{userNo}, 0)
+	]]>
+	</insert>
+		
 	<select id="getByNo" resultType="boardvo" parameterType="long">
 	<![CDATA[
 		select no, title, contents, hit, group_no as groupNo, order_no as orderNo, depth,
@@ -66,14 +74,6 @@
 	]]>
 	</select>
 	
-	<insert id="insert" parameterType="boardvo">
-	<![CDATA[
-		insert into board  
-		values ( null, #{title} , #{contents} , 0, now(),
-				 (select if( isnull(max(group_no)) , 0 , max(group_no)) from board a )+1,
-				  1, 1, #{userNo})
-	]]>
-	</insert>
 	
 	<select id="getTotalPosts" resultType="int">
 	<![CDATA[
@@ -81,11 +81,27 @@
 	]]>
 	</select>
 	
+	<select id="getTotalPostsKwd" resultType="int" parameterType="string">
+	<![CDATA[
+		select count(no) as totalPosts from board where title like concat('%' , #{keyword}, '%') or contents like concat('%' , #{keyword}, '%');
+	]]>
+	</select>
+	
+	<select id="getPagingListKwd" resultType="boardvo" parameterType="paging">
+	<![CDATA[
+		select a.no, a.title, a.contents, a.hit, a.group_no as groupNo, a.order_no as orderNo,
+			   date_format(a.reg_date, '%Y-%m-%d %h:%i:%s') as regDate,
+			   a.depth, a.user_no as userNo, a.del, b.name as userName
+		  from board a join user b on a.user_no = b.no
+		  where a.title like concat('%' , #{keyword}, '%') or a.contents like concat('%' , #{keyword}, '%')
+          order by group_no desc, order_no asc limit #{fromPost}, #{perPageNum}
+	]]>
+	</select>
 	<select id="getPagingList" resultType="boardvo" parameterType="map">
 	<![CDATA[
 		select a.no, a.title, a.contents, a.hit, a.group_no as groupNo, a.order_no as orderNo,
 			   date_format(a.reg_date, '%Y-%m-%d %h:%i:%s') as regDate,
-			   a.depth, a.user_no as userNo, b.name as userName
+			   a.depth, a.user_no as userNo, a.del, b.name as userName
 		  from board a join user b on a.user_no = b.no
           order by group_no desc, order_no asc limit #{fromPost} , #{perPageNum}
 	]]>
@@ -95,7 +111,7 @@
 	<![CDATA[
 		select a.no, a.title, a.contents, a.hit, a.group_no as groupNo, a.order_no as orderNo,
 			   date_format(a.reg_date, '%Y-%m-%d %h:%i:%s') as regDate,
-			   a.depth, a.user_no as userNo, b.name as userName
+			   a.depth, a.user_no as userNo, a.del, , b.name as userName
 		  from board a join user b on a.user_no = b.no
           order by group_no desc, order_no asc;
 	]]>

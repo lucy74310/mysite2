@@ -41,7 +41,8 @@
 					<c:if test="${authUser.no == oneView.userNo }">
 						<a href="${pageContext.servletContext.contextPath }/board/modify/${oneView.no}">글수정</a>
 					</c:if>
-					<a href="${pageContext.servletContext.contextPath }/board/reply/${oneView.groupNo}/${oneView.orderNo}/${oneView.depth}">답글쓰기</a>
+					<a href="${pageContext.servletContext.contextPath }/board/write/reply/?g=${oneView.groupNo}&o=${oneView.orderNo}&d=${oneView.depth}">답글쓰기</a>
+					<%-- <a href="${pageContext.servletContext.contextPath }/board/reply/${oneView.groupNo}/${oneView.orderNo}/${oneView.depth}">답글쓰기</a> --%>
 				</div>
 			</div>
 		</div>

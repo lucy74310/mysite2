@@ -3,10 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>  
 <%@page import="com.cafe24.mysite.vo.UserVo"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-	UserVo authUser = (UserVo) session.getAttribute("authUser");
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>mysite</title>
@@ -20,7 +17,12 @@
 			<div id="board">
 				<form class="board-form" method="post" action="${pageContext.servletContext.contextPath }/board/write">
 					<input type = "hidden" name="userNo" value="${authUser.no }">
-				
+					<c:if test="${kind == 'reply' }">
+						<input type="hidden" name="groupNo" value="${groupno}">
+						<input type="hidden" name="orderNo" value="${orderno}">
+						<input type="hidden" name="depth" value="${depth}">
+					</c:if>
+					<input type="hidden" name="kind" value="${kind}">
 					<table class="tbl-ex">
 						<tr>
 							<th colspan="2">글쓰기</th>

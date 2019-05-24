@@ -99,7 +99,7 @@ div.bottom a {
 	dispaly:block;
 }
 
-a#new-book	 { 
+a#new-book, a#new-book1	 { 
 	float:right; 
 	padding:10px 20px 10px 20px ; 
 	border:1px solid #555; 
@@ -151,3 +151,5 @@ div.pager  ul li a:visited,
 div.pager  ul li a:link,
 div.pager  ul li a:active	{ text-decoration: none; color:#555 }
 div.pager  ul li a:hover	{ text-decoration: none; color:#f00 }
+
+

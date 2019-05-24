@@ -2,6 +2,7 @@ package com.cafe24.mysite.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -10,15 +11,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cafe24.mysite.exception.UserDaoException;
 import com.cafe24.mysite.service.UserService;
 import com.cafe24.mysite.vo.UserVo;
+import com.cafe24.security.Auth;
+import com.cafe24.security.AuthUser;
 
 @Controller
 @RequestMapping("/user")
@@ -63,47 +65,16 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/login", method=RequestMethod.GET)
-	public String login() {
-		
+	public String login(HttpServletRequest request) {
 		return "user/login";
 	}
 	
-	
-	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public String login(
-			@RequestParam(value="email", required=true, defaultValue="") String email, 
-			@RequestParam(value="password", required=true, defaultValue="") String password,
-			HttpSession session,
-			Model model
-	) {
-		
-		
-		//UserVo authUser = userDao.get(email, password);
-		UserVo authUser = userService.getUser(new UserVo(email, password));
-		
-		if( authUser == null ) {
-			model.addAttribute("result", "fail");
-			return "user/login";
-		}
-		
-		// session 처리
-		session.setAttribute("authUser", authUser);
-		
-		return "redirect:/main";
-	}
-	
-	@RequestMapping("/logout")
-	public String logout(HttpSession session) {
-		
-		session.removeAttribute("authUser");
-		session.invalidate();
-		
-		return "redirect:/main";
-	} 
-	
+	@Auth
 	@RequestMapping(value="/update", method=RequestMethod.GET)
-	public String update(HttpSession session) {
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
+	public String update(@AuthUser UserVo authUser) {
+		System.out.println(authUser);
+		//ArgumentResolver로 연결해서 받아줌 
+		//UserVo vo = (UserVo) session.getAttribute("authUser");
 		if( authUser == null ) {
 			return "redirect:/user/login";
 		}
@@ -111,21 +82,64 @@ public class UserController {
 		return "user/update";
 	}
 	
-	@RequestMapping(value="/update", method=RequestMethod.POST)
-	public String update(
+	
+	@RequestMapping(value="/update/apply", method=RequestMethod.POST)
+	public String updateApply(
 			@ModelAttribute UserVo userVo,
-			HttpSession session
+			RedirectAttributes redirect
 	) {
 		
-		Boolean result = userService.modifyUser(userVo);
+		//Boolean result = userService.modifyUser(userVo);
 		
-		if(result == true) {
-			session.removeAttribute("authUser");
-			session.setAttribute("authUser", userVo);
-		}
+//		if(result == true) {
+//			session.removeAttribute("authUser");
+//			session.setAttribute("authUser", userVo);
+//		}
 		
-		return "redirect:/user/update?result=success";
+		// session을 안사용 하려면.. 수정하면 logout 시키는 방식 ? 
+		
+		
+		userService.modifyUser(userVo);
+		
+		redirect.addFlashAttribute("result", "success");
+		return "redirect:/user/login";
+		
+		//return "redirect:/user/update";
 	}
+	
+	// interceptor가 처리해줌
+	/*
+	 * @RequestMapping(value="/auth", method=RequestMethod.POST) public String
+	 * login(
+	 * 
+	 * @RequestParam(value="email", required=true, defaultValue="") String email,
+	 * 
+	 * @RequestParam(value="password", required=true, defaultValue="") String
+	 * password, HttpSession session, Model model ) {
+	 * 
+	 * 
+	 * //UserVo authUser = userDao.get(email, password); UserVo authUser =
+	 * userService.getUser(new UserVo(email, password));
+	 * 
+	 * if( authUser == null ) { model.addAttribute("result", "fail"); return
+	 * "user/login"; }
+	 * 
+	 * // session 처리 session.setAttribute("authUser", authUser);
+	 * 
+	 * return "redirect:/main"; }
+	 */
+	
+	
+	// interceptor가 처리해줌
+	/*
+	 * @RequestMapping("/logout") public String logout(HttpSession session) {
+	 * 
+	 * session.removeAttribute("authUser"); session.invalidate();
+	 * 
+	 * return "redirect:/main"; }
+	 */
+	
+	
 	
 	
 //	@ExceptionHandler( UserDaoException.class )

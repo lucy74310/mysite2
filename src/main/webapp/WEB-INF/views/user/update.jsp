@@ -17,7 +17,7 @@
 		<div id="content">
 			<div id="user">
 
-				<form id="join-form" name="joinForm" method="post" action="${pageContext.servletContext.contextPath }/user/update">
+				<form id="join-form" name="joinForm" method="post" action="${pageContext.servletContext.contextPath }/user/update/apply">
 					<input type="hidden" name="no" value="${authUser.no }">
 					<label class="block-label" for="name">이름</label> 
 					<input id="name" name="name" type="text" value="${authUser.name }"> 
@@ -62,11 +62,6 @@
 		</div>
 		<c:import url="/WEB-INF/views/includes/navigation.jsp"/>
 		<c:import url="/WEB-INF/views/includes/footer.jsp"/>
-		<c:if test="${param.result == 'success' }">
-			<script>
-				alert("정상적으로 수정되었습니다");
-			</script>
-		</c:if>
 		
 	</div>
 </body>
