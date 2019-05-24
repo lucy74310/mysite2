@@ -17,8 +17,6 @@
 		<logback.version>1.1.1</logback.version>
 	</properties>
 
-
-
 	<dependencies>
 		<!-- Spring Core -->
 		<dependency>
@@ -201,13 +199,11 @@
 				<artifactId>tomcat-maven-plugin</artifactId>
 				<configuration>
 					<url>http://127.0.0.1/manager/text</url>
-					<path>/mysite3</path>
+					<path>/mysite2</path>
 					<username>admin</username>
 					<password>manager</password>
 				</configuration>
 			</plugin>
-
-			
 		</plugins>
 	</build>
 
