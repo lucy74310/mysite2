@@ -54,8 +54,6 @@ public class UserDao {
 	public Boolean insert(UserVo vo) {
 		int count = sqlSession.insert("user.insert", vo);
 		return 1 == count ;
-		
-
 	}
 	
 	public UserVo get(Long no) {
