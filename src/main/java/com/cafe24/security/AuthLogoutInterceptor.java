@@ -17,15 +17,14 @@ public class AuthLogoutInterceptor extends HandlerInterceptorAdapter {
 		
 		session.removeAttribute("authUser");
 		session.invalidate();
-		
+		System.out.println("??");
 		
 		if( handler instanceof HandlerMethod == true) {
 			
 			HandlerMethod handlerMethod = (HandlerMethod) handler;
 			
-			
-			if("updatApply".equals(handlerMethod.getMethod().getName()) ) {
-				response.sendRedirect(request.getContextPath() + "/update/apply");
+			System.out.println(handlerMethod.getMethod().getName());
+			if("updateApply".equals(handlerMethod.getMethod().getName()) ) {
 				return true;
 			}
 			
