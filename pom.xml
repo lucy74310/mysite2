@@ -49,7 +49,13 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<version>2.4.0</version>
 		</dependency>
-
+		
+		<!-- PostgreSql java Client -->
+		<dependency>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		    <version>42.2.5</version>
+		</dependency>
 
 		<!-- spring jdbc -->
 		<dependency>
@@ -57,7 +63,7 @@
 			<artifactId>spring-jdbc</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-
+		
 		<!-- MyBatis -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -166,6 +172,8 @@
 		</dependency>
 
 	</dependencies>
+	
+	
 	<profiles>
 		<profile>
 			<id>production</id>

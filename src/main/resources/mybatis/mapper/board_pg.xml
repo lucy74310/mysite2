@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+	
+	
+	
+	
+	<update id="orderupdate" parameterType="boardvo">
+	<![CDATA[
+		update board
+		   set order_no = order_no + 1 
+    	 where group_no = #{groupNo} and order_no > #{orderNo}
+	]]>
+	</update>
+	
+	<insert id="replyinsert" parameterType="boardvo">
+	<![CDATA[
+		insert into board
+		values (default, #{title} , #{contents} , 0, now(),
+				#{groupNo}, #{orderNo}+1, #{depth}+1, 0, #{userNo})
+	]]>
+	</insert>
+	
+	
+	<update id="hitupdate" parameterType="long">
+	<![CDATA[
+		update board
+		   set hit = hit + 1 where no = #{no}
+	]]>
+	
+	</update> 
+	
+	<update id="deleteupdate" parameterType="map">
+	<![CDATA[
+		update board 
+		   set order_no = (order_no -1) 
+		 where group_no = #{groupNo}
+		   and order_no > #{orderNo} 
+	]]>
+	
+	</update>
+	
+	<delete id="delete" parameterType="long">
+	<![CDATA[
+		update board set del = 1 where no = #{no}
+	]]>
+	</delete>
+	
+	
+	
+	<update id="update" parameterType="boardvo">
+	<![CDATA[
+		update board 
+		   set title = #{title} ,
+			   contents = #{contents} where no = #{no};
+	]]>
+	</update>
+	
+	<insert id="insert" parameterType="boardvo">
+	<![CDATA[
+		insert into board  
+		values ( default, #{title} , #{contents} , 0, now(),
+				 (select coalesce ( max(group_no) , 0 ) from board a )+1,
+				  1, 1, 0, #{userNo})
+	]]>
+	</insert>
+		
+	<select id="getByNo" resultType="boardvo" parameterType="long">
+	<![CDATA[
+		select no, title, contents, hit, 
+			   group_no as groupNo, 
+			   order_no as orderNo, depth,
+		       reg_date as regDate , 
+		       member_no as userNo
+		  from board a 
+    	 where no = #{no};
+	]]>
+	</select>
+	
+	
+	<select id="getTotalPosts" resultType="int">
+	<![CDATA[
+		select count(no) as totalPosts from board;
+	]]>
+	</select>
+	
+	<select id="getTotalPostsKwd" resultType="int" parameterType="string">
+	<![CDATA[
+		select count(no) as totalPosts 
+		  from board 
+		 where title like concat('%' , #{keyword}, '%') 
+		    or contents like concat('%' , #{keyword}, '%');
+	]]>
+	</select>
+	
+	<select id="getPagingListKwd" resultType="boardvo" parameterType="paging">
+	<![CDATA[
+		select a.no, a.title, a.contents, a.hit, 
+			   a.group_no as groupNo, 
+			   a.order_no as orderNo,
+			   a.reg_date as regDate,
+			   a.depth, 
+			   a.member_no as userNo, 
+			   a.del, 
+			   b.name as userName
+		  from board a 
+		       join member b 
+		       on a.member_no = b.no
+		 where a.title like concat('%' , #{keyword}, '%') 
+			or a.contents like concat('%' , #{keyword}, '%')
+         order by group_no desc, order_no asc limit #{perPageNum} offset #{fromPost};
+	]]>
+	</select>
+	<select id="getPagingList" resultType="boardvo" parameterType="map">
+	<![CDATA[
+		select a.no, a.title, a.contents, a.hit, 
+			   a.group_no as groupNo, 
+			   a.order_no as orderNo,
+			   a.reg_date as regDate,
+			   a.depth, 
+			   a.member_no as userNo, 
+			   a.del, 
+			   b.name as userName
+		  from board a join member b on a.member_no = b.no
+         order by group_no desc, order_no asc limit #{perPageNum} offset #{fromPost};   
+	]]>
+	
+	</select>
+	<select id="getList" resultType="boardvo">
+	<![CDATA[
+		select a.no, a.title, a.contents, a.hit, 
+			   a.group_no as groupNo, 
+			   a.order_no as orderNo,
+			   a.reg_date as regDate, 
+			   a.depth, 
+			   a.member_no as userNo, 
+			   a.del,  
+			   b.name as userName
+		  from board a 
+		  	   join member b 
+		  	   on a.member_no = b.no
+         order by group_no desc, order_no asc;
+	]]>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	 
+</mapper>
